@@ -7,6 +7,6 @@ services:
       dockerfile: ./src/Dockerfile
     volumes:
       - ./src/main:/main
-    # ports:
-    #   - "80:80"
+    ports:
+      - "4000:4000"
     restart: unless-stopped

@@ -1,9 +1,11 @@
 import logging
 import pandas as pd
 
-from bokeh.plotting import figure, output_file, show, save
+from bokeh.plotting import figure, output_file, show, save, curdoc
 from bokeh.models import DatetimeTickFormatter
+from bokeh.layouts import column
 from twisted.internet import task, reactor
+
 
 # loging
 logging.basicConfig(
@@ -39,10 +41,7 @@ p.line(
 )
 # p.circle(range(1,arr1.shape[0]), arr2, legend_label="model power", line_color="red",  fill_color="red")
 
-
-p.xaxis.formatter = DatetimeTickFormatter(
-    hours=["%d %B %Y"], days=["%d %B %Y"], months=["%d %B %Y"], years=["%d %B %Y"],
-)
 # show the results
 # show(p)
-save(p)
+# save(p)
+curdoc().add_root(column(p))
