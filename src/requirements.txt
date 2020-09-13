@@ -1,6 +1,13 @@
+# Main
+#----------
 requests
+scikit-learn
+pandas
+numpy
+bokeh
+
+# Scheduling
+#----------
 Twisted
 schedule
-
-pandas
 
