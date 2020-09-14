@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 from datetime import datetime
+import time
 import requests
 
 import csv
@@ -10,6 +11,7 @@ from bokeh.layouts import column
 from bokeh.server.server import Server
 from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
+from bokeh.models.formatters import DatetimeTickFormatter
 
 
 # loging
@@ -37,7 +39,7 @@ def runner(doc):
         # SEND REQUEST, READ RESPONSE AND LOAD AS JSON
         resp = requests.get(url=url)
         data = resp.json()
-        write_to_csv(data["data"]["amount"], datetime.utcnow())
+        write_to_csv(data["data"]["amount"], datetime.fromtimestamp(time.time()))
 
         # CONVERT TO PANDAS DATAFRAME
         mydf = pd.read_csv(
@@ -49,18 +51,50 @@ def runner(doc):
 
     TOOLS = "pan,wheel_zoom,box_zoom,reset,undo,save,hover"
     p = figure(
-        title="bitcoin value", x_axis_type="datetime", y_axis_label="usd", tools=TOOLS
+        title="bitcoin value",
+        x_axis_type="datetime",
+        y_axis_label="USD",
+        x_axis_label="Time",
+        tools=TOOLS,
     )
-    p.sizing_mode = "stretch_width"
+    p.background_fill_color = "beige"
+    p.background_fill_alpha = 0.5
+    p.outline_line_width = 7
+    p.outline_line_alpha = 0.3
+    p.outline_line_color = "navy"
+
+    p.sizing_mode = "stretch_both"
     p.line(
-        source=test_data, x="Date", y="Amount", legend_label="real ", line_color="blue"
+        source=test_data,
+        x="Date",
+        y="Amount",
+        legend_label="real ",
+        line_color="#f46d43",
+        line_width=1,
+        line_alpha=0.6,
     )
+    p.circle(
+        source=test_data,
+        x="Date",
+        y="Amount",
+        legend_label="real",
+        line_color="#3288bd",
+        fill_color="white",
+        line_width=5,
+    )
+
+    p.title.text_font_size = "20pt"
+    p.xaxis.axis_label_text_font_size = "15pt"
+    p.xaxis.major_label_text_font_size = "12pt"
+    p.yaxis.axis_label_text_font_size = "15pt"
+    p.yaxis.major_label_text_font_size = "12pt"
+    p.legend.label_text_font_size = "12pt"
+    p.title.align = "center"
+    p.xaxis.formatter = DatetimeTickFormatter(days="%Y-%m-%d %H:%M:%S")
 
     doc.add_periodic_callback(update, 3000)
     doc.add_root(p)
 
-
-# SERVER CODE
 
 server = Server({"/": runner}, port=4000)
 server.start()
