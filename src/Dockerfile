@@ -39,7 +39,9 @@ RUN chmod -R a+rwx /main
 RUN chmod 777 /run.sh
 RUN chmod -R 777 /main
 
-ENV PORT=4000
+RUN chmod -R 777 ./
+
+ENV PORT=8000
 EXPOSE $PORT
 
 ENV BOKEH_INTERVAL_MS=250000

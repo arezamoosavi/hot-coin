@@ -16,8 +16,8 @@ from bokeh.models.formatters import DatetimeTickFormatter
 from joblib import dump, load
 
 
-PORT = int(os.getenv("PORT", 4000))
-BOKEH_INTERVAL_MS = int(os.getenv("BOKEH_INTERVAL_MS", 15000))
+PORT = int(os.getenv("PORT", 8000))
+BOKEH_INTERVAL_MS = int(os.getenv("BOKEH_INTERVAL_MS", 250000))
 
 
 clf = load("bit_reg.joblib")
@@ -109,7 +109,7 @@ server = Server(
     {"/": runner},
     address="0.0.0.0",
     port=PORT,
-    allow_websocket_origin=["*"],
+    allow_websocket_origin=["hot-coin.herokuapp.com"],
     use_xheaders=True,
 )
 server.start()
