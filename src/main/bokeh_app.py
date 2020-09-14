@@ -5,6 +5,7 @@ import time
 import requests
 
 import csv
+from bokeh.io import output_file, show
 from tornado.ioloop import IOLoop
 from bokeh.plotting import figure, ColumnDataSource
 from bokeh.layouts import column
@@ -103,13 +104,15 @@ def runner(doc):
 
     doc.add_periodic_callback(update, BOKEH_INTERVAL_MS)
     doc.add_root(p)
+    output_file("bitcoin.html")
+    show(p)
 
 
 server = Server(
     {"/": runner},
     address="0.0.0.0",
     port=PORT,
-    allow_websocket_origin=["hot-coin.herokuapp.com"],
+    allow_websocket_origin=["*"],
     use_xheaders=True,
 )
 server.start()
