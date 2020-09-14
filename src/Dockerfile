@@ -35,7 +35,12 @@ COPY ./src/run.sh /run.sh
 RUN chmod a+rwx /run.sh
 RUN chmod -R a+rwx /main
 
-# ENV PORT=80
-# EXPOSE $PORT
+ENV PORT=4000
+EXPOSE $PORT
+
+ENV BOKEH_INTERVAL_MS=15000
+ENV DATA_INTERVAL_S=200
+ENV ML_INTERVAL_S=86400
+
 WORKDIR /main
 ENTRYPOINT ["/run.sh"]

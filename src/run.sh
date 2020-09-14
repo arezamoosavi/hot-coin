@@ -5,6 +5,7 @@ set -o nounset
 
 
 echo Wait
-sleep 5000
+
+python twisted_app.py & sleep 5 & python bokeh_app.py
 
 exec "$@"

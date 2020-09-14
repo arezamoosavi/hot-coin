@@ -11,9 +11,9 @@ from sklearn.ensemble import RandomForestRegressor
 url = "https://api.coinbase.com/v2/prices/BTC-USD/spot"
 
 
-DATA_INTERVAL_S = os.getenv("DATA_INTERVAL_S", 200)
+DATA_INTERVAL_S = int(os.getenv("DATA_INTERVAL_S", 200))
 
-ML_INTERVAL_S = os.getenv("ML_INTERVAL_S", 24 * 60 * 60)
+ML_INTERVAL_S = int(os.getenv("ML_INTERVAL_S", 24 * 60 * 60))
 # ML_INTERVAL_S = os.getenv("ML_INTERVAL_S", 20)
 
 TRAIN_SAMPLE = int(10 * 60 * 60 / DATA_INTERVAL_S)
