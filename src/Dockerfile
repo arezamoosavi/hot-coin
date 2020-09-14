@@ -31,7 +31,7 @@ COPY ./main /main
 
 COPY ./run.sh /run.sh
 RUN chmod -R 777 /main
-RUN chmod -R 777 ./
+# RUN chmod -R 777 ./
 
 ENV PORT=4000
 EXPOSE $PORT
