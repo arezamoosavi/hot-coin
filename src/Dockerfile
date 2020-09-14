@@ -1,47 +1,42 @@
-FROM bitnami/minideb:buster
+FROM ubuntu:latest
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONDONTWRITEBYTECODE 1
-
-
-RUN apt-get update \
-    # dependencies for building Python packages
-    && apt-get install -y build-essential \
-    && apt-get install -y bash libc-dev libzbar-dev gcc git curl wget vim nano sudo \
-    && apt-get install -y ranger caca-utils highlight atool w3m poppler-utils mediainfo \
-    # cleaning up unused files
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python3
-RUN apt-get update && apt-get install -y software-properties-common
+# Install OpenJDK 8
 RUN \
     apt-get update && \
-    apt-get install -y python3.7 python3.7-dev python3.7-distutils python3-pip python3-virtualenv && \
+    apt-get install -y openjdk-8-jdk && \
     rm -rf /var/lib/apt/lists/*
 
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-RUN update-alternatives --set python /usr/bin/python3.7
+# Install Python
+RUN \
+    apt-get update && \
+    apt-get install -y python3 python3-dev python3-pip python3-virtualenv && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --upgrade pip
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV PIP_FORMAT=legacy
 
-COPY ./requirements.txt /requirements.txt
+RUN apt-get -y update && apt-get install -y libzbar-dev bash gcc git libc-dev
+
+RUN apt-get install -y netcat && apt-get autoremove -y
+
+RUN apt-get install -y build-essential
+
+COPY requirements.txt /requirements.txt
 RUN pip3 install --no-cache-dir -r /requirements.txt
 
 RUN mkdir -p /main
+
 COPY ./main /main
 
 COPY ./run.sh /run.sh
-RUN chmod a+rwx /run.sh
-RUN chmod -R a+rwx /main
-
 RUN chmod -R 777 /main
 RUN chmod -R 777 ./
 
 ENV PORT=4000
 EXPOSE $PORT
 
-ENV BOKEH_INTERVAL_MS=15000
+ENV BOKEH_INTERVAL_MS=250000
 ENV DATA_INTERVAL_S=200
 ENV ML_INTERVAL_S=86400
 
