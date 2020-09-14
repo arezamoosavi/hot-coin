@@ -105,6 +105,6 @@ def runner(doc):
     doc.add_root(p)
 
 
-server = Server({"/": runner}, port=PORT)
+server = Server({"/": runner}, host="0.0.0.0", port=PORT, allow_websocket_origin=["*"])
 server.start()
 IOLoop.current().start()
