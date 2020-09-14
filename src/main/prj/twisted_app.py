@@ -11,13 +11,13 @@ from sklearn.ensemble import RandomForestRegressor
 url = "https://api.coinbase.com/v2/prices/BTC-USD/spot"
 
 
-DATA_INTERVAL_S = os.getenv("DATA_INTERVAL_S", 10)
+DATA_INTERVAL_S = os.getenv("DATA_INTERVAL_S", 200)
 
-# ML_INTERVAL_S = os.getenv("ML_INTERVAL_S", 24*60*60)
+ML_INTERVAL_S = os.getenv("ML_INTERVAL_S", 24 * 60 * 60)
+# ML_INTERVAL_S = os.getenv("ML_INTERVAL_S", 20)
 
-ML_INTERVAL_S = os.getenv("ML_INTERVAL_S", 20)
-# TRAIN_SAMPLE = int(10 * 60 * 60 / DATA_INTERVAL_S)
-TRAIN_SAMPLE = 100
+TRAIN_SAMPLE = int(10 * 60 * 60 / DATA_INTERVAL_S)
+# TRAIN_SAMPLE = 100
 
 
 def write_to_csv(amount, date):
@@ -52,10 +52,14 @@ def train_model():
         pass
 
 
-l = task.LoopingCall(gather_data)
-l.start(DATA_INTERVAL_S)
+if __name__ == "__main__":
+    try:
+        l = task.LoopingCall(gather_data)
+        l.start(DATA_INTERVAL_S)
 
-ll = task.LoopingCall(train_model)
-ll.start(ML_INTERVAL_S)
+        ll = task.LoopingCall(train_model)
+        ll.start(ML_INTERVAL_S)
 
-reactor.run()
+        reactor.run()
+    finally:
+        reactor.stop()
