@@ -1,47 +1,46 @@
-FROM ubuntu:latest
+FROM bitnami/minideb:buster
 
-# Install OpenJDK 8
-RUN \
-    apt-get update && \
-    apt-get install -y openjdk-8-jdk && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install Python
-RUN \
-    apt-get update && \
-    apt-get install -y python3 python3-dev python3-pip python3-virtualenv && \
-    rm -rf /var/lib/apt/lists/*
-
-ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV PIP_FORMAT=legacy
+ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN apt-get -y update && apt-get install -y libzbar-dev bash gcc git libc-dev
 
-RUN apt-get install -y netcat && apt-get autoremove -y
+RUN apt-get update \
+    # dependencies for building Python packages
+    && apt-get install -y build-essential \
+    && apt-get install -y bash libc-dev libzbar-dev gcc git curl wget vim nano sudo \
+    && apt-get install -y ranger caca-utils highlight atool w3m poppler-utils mediainfo \
+    # cleaning up unused files
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y build-essential
+# Install Python3
+RUN apt-get update && apt-get install -y software-properties-common
+RUN \
+    apt-get update && \
+    apt-get install -y python3.7 python3.7-dev python3.7-distutils python3-pip python3-virtualenv && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /requirements.txt
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+RUN update-alternatives --set python /usr/bin/python3.7
+
+RUN pip3 install --upgrade pip
+
+COPY ./src/requirements.txt /requirements.txt
 RUN pip3 install --no-cache-dir -r /requirements.txt
 
 RUN mkdir -p /main
+COPY ./src/main /main
 
-COPY ./main /main
-
-WORKDIR /main
-
-COPY ./run.sh /run.sh
-RUN chmod 777 /run.sh
-
-RUN chmod -R 777 /main
-RUN chmod -R 777 ./
+COPY ./src/run.sh /run.sh
+RUN chmod a+rwx /run.sh
+RUN chmod -R a+rwx /main
 
 ENV PORT=8000
 EXPOSE $PORT
 
-ENV BOKEH_INTERVAL_MS=250000
-ENV DATA_INTERVAL_S=200
+ENV BOKEH_INTERVAL_MS=5000
+ENV DATA_INTERVAL_S=2
 ENV ML_INTERVAL_S=86400
 
+WORKDIR /main
 ENTRYPOINT ["/run.sh"]
